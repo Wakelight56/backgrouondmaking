@@ -239,6 +239,46 @@ p {
     color: #86868b;
 }
 
+.background-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.background-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1d1d1f;
+}
+
+#background-picker {
+    width: 80px;
+    height: 80px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-right: 15px;
+    vertical-align: middle;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#apply-background {
+    padding: 12px 24px;
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    vertical-align: middle;
+}
+
+#apply-background:hover {
+    background-color: #0077ed;
+}
+
 .color-section h3 {
     font-size: 18px;
     font-weight: 600;

@@ -3,6 +3,8 @@ class EmojiBackgroundGenerator {
         this.uploadInput = document.getElementById('image-upload');
         this.colorPicker = document.getElementById('color-picker');
         this.applyColorBtn = document.getElementById('apply-color');
+        this.backgroundPicker = document.getElementById('background-picker');
+        this.applyBackgroundBtn = document.getElementById('apply-background');
         this.downloadAllBtn = document.getElementById('download-all');
         this.previewContainer = document.getElementById('preview-container');
         this.widthInput = document.getElementById('width-input');
@@ -13,6 +15,7 @@ class EmojiBackgroundGenerator {
         this.tiltValue = document.getElementById('tilt-value');
         this.currentColumns = 2; // 默认2列
         this.currentTilt = 0; // 默认倾斜度
+        this.currentBackground = '#f0f8ff'; // 默认背景色
         this.images = [];
         this.initEventListeners();
         this.loadSavedSettings();
@@ -88,6 +91,13 @@ class EmojiBackgroundGenerator {
             this.applyLayoutToAll();
             this.saveSettings();
         });
+        
+        // 背景色应用事件
+        this.applyBackgroundBtn.addEventListener('click', () => {
+            this.currentBackground = this.backgroundPicker.value;
+            this.applyLayoutToAll();
+            this.saveSettings();
+        });
     }
     
     handleImageUpload(files) {
@@ -125,6 +135,10 @@ class EmojiBackgroundGenerator {
             if (settings.color) {
                 this.colorPicker.value = settings.color;
             }
+            if (settings.background) {
+                this.currentBackground = settings.background;
+                this.backgroundPicker.value = this.currentBackground;
+            }
             if (settings.columns) {
                 this.currentColumns = settings.columns;
             }
@@ -142,6 +156,7 @@ class EmojiBackgroundGenerator {
             width: parseInt(this.widthInput.value) || 200,
             height: parseInt(this.heightInput.value) || 200,
             color: this.colorPicker.value,
+            background: this.currentBackground,
             columns: this.currentColumns,
             tilt: this.currentTilt
         };
@@ -162,7 +177,7 @@ class EmojiBackgroundGenerator {
             canvas.height = height;
             
             // 1. 填充背景色
-            ctx.fillStyle = '#f0f8ff'; // 默认浅蓝色背景
+            ctx.fillStyle = this.currentBackground;
             ctx.fillRect(0, 0, width, height);
             
             // 2. 先创建一个临时Canvas来处理原始图片
@@ -278,7 +293,7 @@ class EmojiBackgroundGenerator {
         const height = canvas.height;
         
         // 1. 填充背景色
-        ctx.fillStyle = '#f0f8ff';
+        ctx.fillStyle = this.currentBackground;
         ctx.fillRect(0, 0, width, height);
         
         // 2. 先创建一个临时Canvas来处理原始图片
