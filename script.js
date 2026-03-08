@@ -220,6 +220,11 @@ class EmojiBackgroundGenerator {
                 tempCtx.drawImage(img, 0, 0);
                 
                 // 3. 应用颜色覆盖到原始图片（使用用户选择的颜色）
+                // 先保存原始图片质量
+                tempCtx.imageSmoothingEnabled = true;
+                tempCtx.imageSmoothingQuality = 'high';
+                
+                // 应用颜色覆盖
                 const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
                 const tempData = tempImageData.data;
                 const color = this.colorPicker.value;
@@ -237,6 +242,10 @@ class EmojiBackgroundGenerator {
                     }
                 }
                 tempCtx.putImageData(tempImageData, 0, 0);
+                
+                // 再次设置高质量渲染
+                tempCtx.imageSmoothingEnabled = true;
+                tempCtx.imageSmoothingQuality = 'high';
                 
                 // 4. 根据列数排列表情符号
                 this.drawEmojisInGrid(ctx, tempCanvas, width, height, this.currentColumns);
@@ -376,6 +385,11 @@ class EmojiBackgroundGenerator {
         tempCtx.drawImage(img, 0, 0);
         
         // 3. 应用颜色覆盖到原始图片（使用用户选择的颜色）
+        // 设置高质量渲染
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        
+        // 应用颜色覆盖
         const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
         const tempData = tempImageData.data;
         const color = this.colorPicker.value;
@@ -392,6 +406,10 @@ class EmojiBackgroundGenerator {
             }
         }
         tempCtx.putImageData(tempImageData, 0, 0);
+        
+        // 再次设置高质量渲染
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
         
         // 4. 根据列数排列表情符号
         this.drawEmojisInGrid(ctx, tempCanvas, width, height, this.currentColumns);
