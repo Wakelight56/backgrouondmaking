@@ -9,7 +9,10 @@ class EmojiBackgroundGenerator {
         this.heightInput = document.getElementById('height-input');
         this.applySizeBtn = document.getElementById('apply-size');
         this.layoutBtns = document.querySelectorAll('.layout-btn');
+        this.tiltInput = document.getElementById('tilt-input');
+        this.tiltValue = document.getElementById('tilt-value');
         this.currentColumns = 2; // 默认2列
+        this.currentTilt = 0; // 默认倾斜度
         this.images = [];
         this.initEventListeners();
         this.loadSavedSettings();
@@ -77,6 +80,14 @@ class EmojiBackgroundGenerator {
                 this.saveSettings();
             });
         });
+        
+        // 倾斜度调整事件
+        this.tiltInput.addEventListener('input', () => {
+            this.currentTilt = parseInt(this.tiltInput.value);
+            this.tiltValue.textContent = `${this.currentTilt}°`;
+            this.applyLayoutToAll();
+            this.saveSettings();
+        });
     }
     
     handleImageUpload(files) {
@@ -117,6 +128,11 @@ class EmojiBackgroundGenerator {
             if (settings.columns) {
                 this.currentColumns = settings.columns;
             }
+            if (settings.tilt) {
+                this.currentTilt = settings.tilt;
+                this.tiltInput.value = this.currentTilt;
+                this.tiltValue.textContent = `${this.currentTilt}°`;
+            }
         }
         this.updateLayoutButtons();
     }
@@ -126,7 +142,8 @@ class EmojiBackgroundGenerator {
             width: parseInt(this.widthInput.value) || 200,
             height: parseInt(this.heightInput.value) || 200,
             color: this.colorPicker.value,
-            columns: this.currentColumns
+            columns: this.currentColumns,
+            tilt: this.currentTilt
         };
         localStorage.setItem('emojiGeneratorSettings', JSON.stringify(settings));
     }
@@ -155,16 +172,20 @@ class EmojiBackgroundGenerator {
             tempCanvas.height = img.height;
             tempCtx.drawImage(img, 0, 0);
             
-            // 3. 应用颜色覆盖到原始图片（设置为白色）
+            // 3. 应用颜色覆盖到原始图片（使用用户选择的颜色）
             const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const tempData = tempImageData.data;
+            const color = this.colorPicker.value;
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
             
             for (let i = 0; i < tempData.length; i += 4) {
                 const alpha = tempData[i + 3];
                 if (alpha > 0) {
-                    tempData[i] = 255;     // 红色通道（白色）
-                    tempData[i + 1] = 255; // 绿色通道（白色）
-                    tempData[i + 2] = 255; // 蓝色通道（白色）
+                    tempData[i] = r;     // 红色通道
+                    tempData[i + 1] = g; // 绿色通道
+                    tempData[i + 2] = b; // 蓝色通道
                     // 保持原始透明度
                 }
             }
@@ -230,8 +251,17 @@ class EmojiBackgroundGenerator {
                 const x = startX + col * (emojiSize + margin);
                 const y = startY + row * (emojiSize + margin);
                 
-                // 绘制表情
-                ctx.drawImage(emojiCanvas, x, y, emojiSize, emojiSize);
+                // 应用倾斜度
+                if (this.currentTilt !== 0) {
+                    ctx.save();
+                    ctx.translate(x + emojiSize / 2, y + emojiSize / 2);
+                    ctx.rotate(this.currentTilt * Math.PI / 180);
+                    ctx.drawImage(emojiCanvas, -emojiSize / 2, -emojiSize / 2, emojiSize, emojiSize);
+                    ctx.restore();
+                } else {
+                    // 绘制表情
+                    ctx.drawImage(emojiCanvas, x, y, emojiSize, emojiSize);
+                }
             }
         }
     }
@@ -258,16 +288,20 @@ class EmojiBackgroundGenerator {
         tempCanvas.height = img.height;
         tempCtx.drawImage(img, 0, 0);
         
-        // 3. 应用颜色覆盖到原始图片（设置为白色）
+        // 3. 应用颜色覆盖到原始图片（使用用户选择的颜色）
         const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
         const tempData = tempImageData.data;
+        const color = this.colorPicker.value;
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
         
         for (let i = 0; i < tempData.length; i += 4) {
             const alpha = tempData[i + 3];
             if (alpha > 0) {
-                tempData[i] = 255;
-                tempData[i + 1] = 255;
-                tempData[i + 2] = 255;
+                tempData[i] = r;
+                tempData[i + 1] = g;
+                tempData[i + 2] = b;
             }
         }
         tempCtx.putImageData(tempImageData, 0, 0);
