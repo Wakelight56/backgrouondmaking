@@ -116,21 +116,11 @@ class EmojiBackgroundGenerator {
             canvas.width = width;
             canvas.height = height;
             
-            // 绘制背景
-            ctx.fillStyle = this.colorPicker.value;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // 整张排布图片（拉伸填充）
+            ctx.drawImage(img, 0, 0, width, height);
             
-            // 绘制图片（保持透明度，居中显示）
-            ctx.globalCompositeOperation = 'source-atop';
-            const scale = Math.min(width / img.width, height / img.height, 1);
-            const scaledWidth = img.width * scale;
-            const scaledHeight = img.height * scale;
-            const x = (width - scaledWidth) / 2;
-            const y = (height - scaledHeight) / 2;
-            ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-            
-            // 重置合成模式
-            ctx.globalCompositeOperation = 'source-over';
+            // 应用颜色覆盖
+            this.applyColorToImage({ img, canvas, ctx, previewImg: null });
             
             // 创建预览项
             const previewItem = document.createElement('div');
@@ -178,24 +168,11 @@ class EmojiBackgroundGenerator {
         canvas.width = width;
         canvas.height = height;
         
-        // 绘制背景
-        ctx.fillStyle = this.colorPicker.value;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 整张排布图片（拉伸填充）
+        ctx.drawImage(img, 0, 0, width, height);
         
-        // 绘制图片（保持透明度，居中显示）
-        ctx.globalCompositeOperation = 'source-atop';
-        const scale = Math.min(width / img.width, height / img.height, 1);
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
-        const x = (width - scaledWidth) / 2;
-        const y = (height - scaledHeight) / 2;
-        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-        
-        // 重置合成模式
-        ctx.globalCompositeOperation = 'source-over';
-        
-        // 更新预览
-        previewImg.src = canvas.toDataURL();
+        // 重新应用颜色覆盖
+        this.applyColorToImage({ img, canvas, ctx, previewImg });
     }
     
     applyColorToAll() {
@@ -206,29 +183,35 @@ class EmojiBackgroundGenerator {
     }
     
     applyColorToImage(imageInfo, color) {
-        const { img, canvas, ctx, previewImg } = imageInfo;
+        const { canvas, ctx, previewImg } = imageInfo;
         
-        // 清空Canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 获取颜色RGB值
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
         
-        // 绘制新背景
-        ctx.fillStyle = color;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 获取图像数据
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
         
-        // 绘制图片（保持透明度，居中显示）
-        ctx.globalCompositeOperation = 'source-atop';
-        const scale = Math.min(canvas.width / img.width, canvas.height / img.height, 1);
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
-        const x = (canvas.width - scaledWidth) / 2;
-        const y = (canvas.height - scaledHeight) / 2;
-        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+        // 遍历所有像素，替换颜色（保留透明度）
+        for (let i = 0; i < data.length; i += 4) {
+            const alpha = data[i + 3];
+            if (alpha > 0) { // 只处理非透明像素
+                data[i] = r;     // 红色通道
+                data[i + 1] = g; // 绿色通道
+                data[i + 2] = b; // 蓝色通道
+                // 保持原始透明度
+            }
+        }
         
-        // 重置合成模式
-        ctx.globalCompositeOperation = 'source-over';
+        // 把修改后的数据放回Canvas
+        ctx.putImageData(imageData, 0, 0);
         
         // 更新预览
-        previewImg.src = canvas.toDataURL();
+        if (previewImg) {
+            previewImg.src = canvas.toDataURL();
+        }
         
         // 保存颜色设置
         this.saveSettings();
