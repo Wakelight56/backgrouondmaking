@@ -2,8 +2,10 @@ class EmojiBackgroundGenerator {
     constructor() {
         this.uploadInput = document.getElementById('image-upload');
         this.colorPicker = document.getElementById('color-picker');
+        this.hexColorInput = document.getElementById('hex-color-input');
         this.applyColorBtn = document.getElementById('apply-color');
         this.backgroundPicker = document.getElementById('background-picker');
+        this.hexBackgroundInput = document.getElementById('hex-background-input');
         this.applyBackgroundBtn = document.getElementById('apply-background');
         this.downloadAllBtn = document.getElementById('download-all');
         this.previewContainer = document.getElementById('preview-container');
@@ -106,6 +108,34 @@ class EmojiBackgroundGenerator {
             this.currentBackground = this.backgroundPicker.value;
             this.applyLayoutToAll();
             this.saveSettings();
+        });
+        
+        // 颜色选择器变化事件
+        this.colorPicker.addEventListener('change', () => {
+            this.hexColorInput.value = this.colorPicker.value;
+        });
+        
+        // 十六进制颜色输入变化事件
+        this.hexColorInput.addEventListener('change', () => {
+            const hexColor = this.hexColorInput.value;
+            // 验证十六进制颜色格式
+            if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hexColor)) {
+                this.colorPicker.value = hexColor;
+            }
+        });
+        
+        // 背景色选择器变化事件
+        this.backgroundPicker.addEventListener('change', () => {
+            this.hexBackgroundInput.value = this.backgroundPicker.value;
+        });
+        
+        // 背景色十六进制输入变化事件
+        this.hexBackgroundInput.addEventListener('change', () => {
+            const hexColor = this.hexBackgroundInput.value;
+            // 验证十六进制颜色格式
+            if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hexColor)) {
+                this.backgroundPicker.value = hexColor;
+            }
         });
         
         // 素材大小调整事件

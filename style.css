@@ -389,6 +389,23 @@ p {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+#hex-background-input {
+    width: 150px;
+    padding: 10px;
+    border: 2px solid #d1d1d6;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+#hex-background-input:focus {
+    outline: none;
+    border-color: #0071e3;
+}
+
 #apply-background {
     padding: 12px 24px;
     background-color: #0071e3;
@@ -422,6 +439,23 @@ p {
     margin-right: 15px;
     vertical-align: middle;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#hex-color-input {
+    width: 150px;
+    padding: 10px;
+    border: 2px solid #d1d1d6;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+#hex-color-input:focus {
+    outline: none;
+    border-color: #0071e3;
 }
 
 #apply-color {
