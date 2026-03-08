@@ -300,19 +300,23 @@ class EmojiBackgroundGenerator {
     }
     
     drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
-        // 使用素材图片的原始尺寸
+        // 关键：使用素材图片的原始尺寸，不进行任何缩放
         const emojiWidth = emojiCanvas.width;
         const emojiHeight = emojiCanvas.height;
         
-        const margin = 20; // 间距
+        const margin = 10; // 适当的间距
         
-        // 计算每行可容纳的表情数量（确保填满整个画布）
-        const emojisPerRow = Math.ceil(width / (emojiWidth + margin)) + 1; // 额外添加一行以确保填满
-        const emojisPerCol = Math.ceil(height / (emojiHeight + margin)) + 1; // 额外添加一列以确保填满
+        // 计算需要多少行和列才能填满整个画布
+        const emojisPerRow = Math.ceil(width / (emojiWidth + margin)) + 1;
+        const emojisPerCol = Math.ceil(height / (emojiHeight + margin)) + 1;
         
-        // 计算起始位置，从左上角开始，确保图案填满整个画布
+        // 从左上角开始绘制
         const startX = 0;
         const startY = 0;
+        
+        // 确保高质量渲染
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         
         // 绘制表情网格
         for (let row = 0; row < emojisPerCol; row++) {
@@ -321,7 +325,6 @@ class EmojiBackgroundGenerator {
             // 应用倾斜度到整行
             if (this.currentTilt !== 0) {
                 ctx.save();
-                // 计算行的中心点
                 const rowCenterX = width / 2;
                 const rowCenterY = rowY + emojiHeight / 2;
                 ctx.translate(rowCenterX, rowCenterY);
@@ -334,10 +337,8 @@ class EmojiBackgroundGenerator {
                 const x = startX + col * (emojiWidth + margin);
                 const y = rowY;
                 
-                // 绘制表情，使用原始尺寸
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(emojiCanvas, x, y, emojiWidth, emojiHeight);
+                // 直接绘制原始尺寸的图片，不进行任何缩放
+                ctx.drawImage(emojiCanvas, x, y);
             }
             
             // 恢复画布状态
