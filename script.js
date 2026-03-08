@@ -8,6 +8,8 @@ class EmojiBackgroundGenerator {
         this.widthInput = document.getElementById('width-input');
         this.heightInput = document.getElementById('height-input');
         this.applySizeBtn = document.getElementById('apply-size');
+        this.layoutBtns = document.querySelectorAll('.layout-btn');
+        this.currentColumns = 2; // 默认2列
         this.images = [];
         this.initEventListeners();
         this.loadSavedSettings();
@@ -64,6 +66,17 @@ class EmojiBackgroundGenerator {
         this.heightInput.addEventListener('change', () => {
             this.saveSettings();
         });
+        
+        // 排列按钮点击事件
+        this.layoutBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const columns = parseInt(btn.dataset.columns);
+                this.currentColumns = columns;
+                this.updateLayoutButtons();
+                this.applyLayoutToAll();
+                this.saveSettings();
+            });
+        });
     }
     
     handleImageUpload(files) {
@@ -74,6 +87,16 @@ class EmojiBackgroundGenerator {
                     this.processImage(e.target.result);
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    updateLayoutButtons() {
+        this.layoutBtns.forEach(btn => {
+            if (parseInt(btn.dataset.columns) === this.currentColumns) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
             }
         });
     }
@@ -91,14 +114,19 @@ class EmojiBackgroundGenerator {
             if (settings.color) {
                 this.colorPicker.value = settings.color;
             }
+            if (settings.columns) {
+                this.currentColumns = settings.columns;
+            }
         }
+        this.updateLayoutButtons();
     }
     
     saveSettings() {
         const settings = {
             width: parseInt(this.widthInput.value) || 200,
             height: parseInt(this.heightInput.value) || 200,
-            color: this.colorPicker.value
+            color: this.colorPicker.value,
+            columns: this.currentColumns
         };
         localStorage.setItem('emojiGeneratorSettings', JSON.stringify(settings));
     }
@@ -142,12 +170,8 @@ class EmojiBackgroundGenerator {
             }
             tempCtx.putImageData(tempImageData, 0, 0);
             
-            // 4. 创建重复图案
-            const pattern = ctx.createPattern(tempCanvas, 'repeat');
-            
-            // 5. 填充整个Canvas
-            ctx.fillStyle = pattern;
-            ctx.fillRect(0, 0, width, height);
+            // 4. 根据列数排列表情符号
+            this.drawEmojisInGrid(ctx, tempCanvas, width, height, this.currentColumns);
             
             // 创建预览项
             const previewItem = document.createElement('div');
@@ -186,6 +210,77 @@ class EmojiBackgroundGenerator {
         this.saveSettings();
     }
     
+    drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
+        const emojiSize = 30; // 表情大小
+        const margin = 10; // 间距
+        
+        // 计算每行可容纳的表情数量
+        const emojisPerRow = columns;
+        const emojisPerCol = Math.ceil(height / (emojiSize + margin));
+        
+        // 计算起始位置，使整体居中
+        const totalWidth = emojisPerRow * (emojiSize + margin) - margin;
+        const totalHeight = emojisPerCol * (emojiSize + margin) - margin;
+        const startX = (width - totalWidth) / 2;
+        const startY = (height - totalHeight) / 2;
+        
+        // 绘制表情网格
+        for (let row = 0; row < emojisPerCol; row++) {
+            for (let col = 0; col < emojisPerRow; col++) {
+                const x = startX + col * (emojiSize + margin);
+                const y = startY + row * (emojiSize + margin);
+                
+                // 绘制表情
+                ctx.drawImage(emojiCanvas, x, y, emojiSize, emojiSize);
+            }
+        }
+    }
+    
+    applyLayoutToAll() {
+        this.images.forEach(imageInfo => {
+            this.updateLayout(imageInfo);
+        });
+    }
+    
+    updateLayout(imageInfo) {
+        const { img, canvas, ctx, previewImg } = imageInfo;
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // 1. 填充背景色
+        ctx.fillStyle = '#f0f8ff';
+        ctx.fillRect(0, 0, width, height);
+        
+        // 2. 先创建一个临时Canvas来处理原始图片
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
+        tempCtx.drawImage(img, 0, 0);
+        
+        // 3. 应用颜色覆盖到原始图片（设置为白色）
+        const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const tempData = tempImageData.data;
+        
+        for (let i = 0; i < tempData.length; i += 4) {
+            const alpha = tempData[i + 3];
+            if (alpha > 0) {
+                tempData[i] = 255;
+                tempData[i + 1] = 255;
+                tempData[i + 2] = 255;
+            }
+        }
+        tempCtx.putImageData(tempImageData, 0, 0);
+        
+        // 4. 根据列数排列表情符号
+        this.drawEmojisInGrid(ctx, tempCanvas, width, height, this.currentColumns);
+        
+        // 更新预览
+        if (previewImg) {
+            previewImg.src = canvas.toDataURL();
+        }
+    }
+    
     updateImageSize(imageInfo) {
         const { img, canvas, ctx, previewImg } = imageInfo;
         const width = parseInt(this.widthInput.value) || 200;
@@ -195,8 +290,8 @@ class EmojiBackgroundGenerator {
         canvas.width = width;
         canvas.height = height;
         
-        // 重新应用颜色覆盖（会自动创建重复图案）
-        this.applyColorToImage({ img, canvas, ctx, previewImg });
+        // 重新应用布局
+        this.updateLayout(imageInfo);
     }
     
     applyColorToAll() {
@@ -235,12 +330,8 @@ class EmojiBackgroundGenerator {
         }
         tempCtx.putImageData(tempImageData, 0, 0);
         
-        // 4. 创建重复图案
-        const pattern = ctx.createPattern(tempCanvas, 'repeat');
-        
-        // 5. 填充整个Canvas
-        ctx.fillStyle = pattern;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 4. 根据列数排列表情符号
+        this.drawEmojisInGrid(ctx, tempCanvas, canvas.width, canvas.height, this.currentColumns);
         
         // 更新预览
         if (previewImg) {
