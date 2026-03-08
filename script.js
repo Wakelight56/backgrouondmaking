@@ -340,12 +340,14 @@ class EmojiBackgroundGenerator {
             emojisPerRow = Math.ceil(width / (emojiWidth + horizontalSpacing)) + 1;
         }
         
-        // 计算需要多少行才能覆盖整个高度
-        const emojisPerCol = Math.ceil(height / (emojiHeight + verticalSpacing)) + 1;
+        // 计算需要多少行才能覆盖整个高度，考虑倾斜度的影响
+        // 当有倾斜度时，需要增加行数以确保覆盖整个画布
+        const rowHeight = emojiHeight + verticalSpacing;
+        const emojisPerCol = Math.ceil(height / rowHeight) + 3; // 增加额外的行以确保覆盖
         
-        // 从左上角开始绘制
-        const startX = 0;
-        const startY = 0;
+        // 从左上角开始绘制，考虑倾斜度的影响
+        const startX = -emojiWidth; // 向左偏移一个图片宽度，确保覆盖左侧
+        const startY = -emojiHeight; // 向上偏移一个图片高度，确保覆盖顶部
         
         // 确保高质量渲染
         ctx.imageSmoothingEnabled = true;
@@ -353,7 +355,10 @@ class EmojiBackgroundGenerator {
         
         // 绘制表情网格
         for (let row = 0; row < emojisPerCol; row++) {
-            const rowY = startY + row * (emojiHeight + verticalSpacing);
+            const rowY = startY + row * rowHeight;
+            
+            // 计算交错排列的偏移量
+            const staggerOffset = row % 2 === 1 ? (emojiWidth + horizontalSpacing) / 2 : 0;
             
             // 应用倾斜度到整行
             if (this.currentTilt !== 0) {
@@ -367,7 +372,7 @@ class EmojiBackgroundGenerator {
             
             // 绘制当前行的所有表情
             for (let col = 0; col < emojisPerRow; col++) {
-                const x = startX + col * (emojiWidth + horizontalSpacing);
+                const x = startX + col * (emojiWidth + horizontalSpacing) + staggerOffset;
                 const y = rowY;
                 
                 // 直接绘制原始尺寸的图片，不进行任何缩放
