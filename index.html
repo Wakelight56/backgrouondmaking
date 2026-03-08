@@ -3,143 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIY表情符号背景生成器</title>
+    <title>Project Sekai 背景生成器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>DIY表情符号背景生成器</h1>
-        <p>上传图片并自定义颜色，创建属于你的表情符号背景</p>
+        <header class="header">
+            <h1>Project Sekai 背景生成器</h1>
+            <p>创建属于你的表情符号背景</p>
+        </header>
         
-        <!-- 上传区域 -->
-        <div class="upload-section">
-            <label for="image-upload" class="upload-label">
-                点击或拖拽上传图片
-                <input type="file" id="image-upload" multiple accept="image/*">
-            </label>
-            <p class="upload-hint">支持上传多张图片</p>
-        </div>
+        <main class="main-content">
+            <!-- 上传区域 -->
+            <section class="upload-section">
+                <h2>上传素材</h2>
+                <label for="image-upload" class="upload-label">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击或拖拽上传图片</div>
+                    <input type="file" id="image-upload" multiple accept="image/*">
+                </label>
+                <p class="upload-hint">支持上传多张图片</p>
+            </section>
+            
+            <!-- 颜色设置区域 -->
+            <section class="color-settings">
+                <h2>颜色设置</h2>
+                
+                <div class="color-section">
+                    <h3>素材颜色</h3>
+                    <div class="color-controls">
+                        <input type="color" id="color-picker" value="#ff6b6b">
+                        <input type="text" id="hex-color-input" placeholder="输入十六进制颜色" value="#ff6b6b">
+                        <button id="apply-color">应用颜色</button>
+                    </div>
+                </div>
+                
+                <div class="background-section">
+                    <h3>背景颜色</h3>
+                    <div class="color-controls">
+                        <input type="color" id="background-picker" value="#f0f8ff">
+                        <input type="text" id="hex-background-input" placeholder="输入十六进制颜色" value="#f0f8ff">
+                        <button id="apply-background">应用背景色</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 预设颜色 -->
+            <section class="preset-colors-section">
+                <h2>预设颜色</h2>
+                <div class="preset-colors-container" id="preset-colors-container">
+                    <!-- 预设颜色将通过JavaScript动态生成 -->
+                </div>
+            </section>
+            
+            <!-- 布局设置 -->
+            <section class="layout-settings">
+                <h2>布局设置</h2>
+                
+                <div class="layout-section">
+                    <h3>排列方式</h3>
+                    <div class="layout-controls">
+                        <button class="layout-btn" data-columns="2">2列</button>
+                        <button class="layout-btn" data-columns="3">3列</button>
+                        <button class="layout-btn" data-columns="4">4列</button>
+                        <button class="layout-btn" data-columns="5">5列</button>
+                    </div>
+                </div>
+                
+                <div class="tilt-section">
+                    <h3>倾斜度</h3>
+                    <div class="control-group">
+                        <input type="range" id="tilt-input" min="-45" max="45" value="0" step="1">
+                        <span id="tilt-value">0°</span>
+                    </div>
+                </div>
+                
+                <div class="image-size-section">
+                    <h3>素材大小</h3>
+                    <div class="control-group">
+                        <input type="range" id="image-size-input" min="10" max="100" value="30" step="5">
+                        <span id="image-size-value">30%</span>
+                    </div>
+                </div>
+                
+                <div class="spacing-section">
+                    <h3>间距设置</h3>
+                    <div class="spacing-controls">
+                        <div class="control-group">
+                            <label>水平间距</label>
+                            <input type="range" id="horizontal-spacing-input" min="0" max="50" value="20" step="1">
+                            <span id="horizontal-spacing-value">20px</span>
+                        </div>
+                        <div class="control-group">
+                            <label>垂直间距</label>
+                            <input type="range" id="vertical-spacing-input" min="0" max="50" value="20" step="1">
+                            <span id="vertical-spacing-value">20px</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 效果设置 -->
+            <section class="effect-settings">
+                <h2>效果设置</h2>
+                
+                <div class="brightness-section">
+                    <h3>亮度</h3>
+                    <div class="control-group">
+                        <input type="range" id="brightness-input" min="0" max="200" value="80" step="5">
+                        <span id="brightness-value">80%</span>
+                    </div>
+                </div>
+                
+                <div class="contrast-section">
+                    <h3>对比度</h3>
+                    <div class="control-group">
+                        <input type="range" id="contrast-input" min="0" max="200" value="100" step="5">
+                        <span id="contrast-value">100%</span>
+                    </div>
+                </div>
+                
+                <div class="chaos-section">
+                    <h3>混乱度</h3>
+                    <div class="control-group">
+                        <input type="range" id="chaos-input" min="0" max="100" value="0" step="5">
+                        <span id="chaos-value">0%</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 图片大小设置 -->
+            <section class="output-size-section">
+                <h2>输出设置</h2>
+                <div class="size-section">
+                    <h3>图片尺寸</h3>
+                    <div class="size-controls">
+                        <input type="number" id="width-input" min="100" max="1000" value="200" placeholder="宽度">
+                        <span>×</span>
+                        <input type="number" id="height-input" min="100" max="1000" value="200" placeholder="高度">
+                        <button id="apply-size">应用大小</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 预览区域 -->
+            <section class="preview-section">
+                <h2>预览效果</h2>
+                <div class="preview-container" id="preview-container">
+                    <!-- 上传的图片将在这里显示 -->
+                </div>
+            </section>
+            
+            <!-- 下载区域 -->
+            <section class="download-section">
+                <button id="download-all">下载所有图片</button>
+            </section>
+        </main>
         
-        <!-- 颜色选择区域 -->
-        <div class="color-section">
-            <h3>选择颜色</h3>
-            <input type="color" id="color-picker" value="#ff6b6b">
-            <input type="text" id="hex-color-input" placeholder="输入十六进制颜色" value="#ff6b6b">
-            <button id="apply-color">一键应用颜色</button>
-        </div>
-        
-        <!-- 预设颜色 -->
-        <div class="preset-colors-section">
-            <h3>预设颜色</h3>
-            <div class="preset-colors-container" id="preset-colors-container">
-                <!-- 预设颜色将通过JavaScript动态生成 -->
-            </div>
-        </div>
-        
-        <!-- 背景色设置 -->
-        <div class="background-section">
-            <h3>背景色设置</h3>
-            <input type="color" id="background-picker" value="#f0f8ff">
-            <input type="text" id="hex-background-input" placeholder="输入十六进制颜色" value="#f0f8ff">
-            <button id="apply-background">应用背景色</button>
-        </div>
-        
-        <!-- 排列设置 -->
-        <div class="layout-section">
-            <h3>排列方式</h3>
-            <div class="layout-controls">
-                <button class="layout-btn" data-columns="2">2列</button>
-                <button class="layout-btn" data-columns="3">3列</button>
-                <button class="layout-btn" data-columns="4">4列</button>
-                <button class="layout-btn" data-columns="5">5列</button>
-            </div>
-            <p class="layout-hint">选择表情符号的排列列数</p>
-        </div>
-        
-        <!-- 倾斜度设置 -->
-        <div class="tilt-section">
-            <h3>倾斜度设置</h3>
-            <div class="tilt-controls">
-                <input type="range" id="tilt-input" min="-45" max="45" value="0" step="1">
-                <span id="tilt-value">0°</span>
-            </div>
-            <p class="tilt-hint">设置每一行的倾斜角度</p>
-        </div>
-        
-        <!-- 素材大小设置 -->
-        <div class="image-size-section">
-            <h3>素材大小设置</h3>
-            <div class="image-size-controls">
-                <input type="range" id="image-size-input" min="10" max="100" value="30" step="5">
-                <span id="image-size-value">30%</span>
-            </div>
-            <p class="image-size-hint">设置素材图片的大小</p>
-        </div>
-        
-        <!-- 间距设置 -->
-        <div class="spacing-section">
-            <h3>间距设置</h3>
-            <div class="spacing-controls">
-                <label>水平间距: <input type="range" id="horizontal-spacing-input" min="0" max="50" value="20" step="1"><span id="horizontal-spacing-value">20px</span></label>
-                <label>垂直间距: <input type="range" id="vertical-spacing-input" min="0" max="50" value="20" step="1"><span id="vertical-spacing-value">20px</span></label>
-            </div>
-            <p class="spacing-hint">设置素材图片之间的间距</p>
-        </div>
-        
-        <!-- 亮度设置 -->
-        <div class="brightness-section">
-            <h3>亮度设置</h3>
-            <div class="brightness-controls">
-                <input type="range" id="brightness-input" min="0" max="200" value="80" step="5">
-                <span id="brightness-value">80%</span>
-            </div>
-            <p class="brightness-hint">调整整体亮度，100%为原始亮度</p>
-        </div>
-        
-        <!-- 对比度设置 -->
-        <div class="contrast-section">
-            <h3>对比度设置</h3>
-            <div class="contrast-controls">
-                <input type="range" id="contrast-input" min="0" max="200" value="100" step="5">
-                <span id="contrast-value">100%</span>
-            </div>
-            <p class="contrast-hint">调整全局对比度，100%为原始对比度</p>
-        </div>
-        
-        <!-- 混乱度设置 -->
-        <div class="chaos-section">
-            <h3>混乱度设置</h3>
-            <div class="chaos-controls">
-                <input type="range" id="chaos-input" min="0" max="100" value="0" step="5">
-                <span id="chaos-value">0%</span>
-            </div>
-            <p class="chaos-hint">调整素材的混乱程度，0%为整齐排列，100%为完全随机</p>
-        </div>
-        
-        <!-- 图片大小设置 -->
-        <div class="size-section">
-            <h3>图片大小设置</h3>
-            <div class="size-controls">
-                <input type="number" id="width-input" min="100" max="1000" value="200" placeholder="宽度">
-                <span>×</span>
-                <input type="number" id="height-input" min="100" max="1000" value="200" placeholder="高度">
-                <button id="apply-size">应用大小</button>
-            </div>
-            <p class="size-hint">设置生成图片的尺寸，会自动记忆</p>
-        </div>
-        
-        <!-- 预览区域 -->
-        <div class="preview-section">
-            <h3>预览效果</h3>
-            <div class="preview-container" id="preview-container">
-                <!-- 上传的图片将在这里显示 -->
-            </div>
-        </div>
-        
-        <!-- 下载区域 -->
-        <div class="download-section">
-            <button id="download-all">下载所有图片</button>
-        </div>
+        <footer class="footer">
+            <p>Project Sekai 背景生成器 © 2026</p>
+        </footer>
     </div>
     
     <script src="script.js"></script>
