@@ -13,8 +13,11 @@ class EmojiBackgroundGenerator {
         this.layoutBtns = document.querySelectorAll('.layout-btn');
         this.tiltInput = document.getElementById('tilt-input');
         this.tiltValue = document.getElementById('tilt-value');
+        this.imageSizeInput = document.getElementById('image-size-input');
+        this.imageSizeValue = document.getElementById('image-size-value');
         this.currentColumns = 2; // 默认2列
         this.currentTilt = 0; // 默认倾斜度
+        this.currentImageSize = 50; // 默认素材大小（百分比）
         this.currentBackground = '#f0f8ff'; // 默认背景色
         this.images = [];
         this.initEventListeners();
@@ -98,6 +101,14 @@ class EmojiBackgroundGenerator {
             this.applyLayoutToAll();
             this.saveSettings();
         });
+        
+        // 素材大小调整事件
+        this.imageSizeInput.addEventListener('input', () => {
+            this.currentImageSize = parseInt(this.imageSizeInput.value);
+            this.imageSizeValue.textContent = `${this.currentImageSize}%`;
+            this.applyLayoutToAll();
+            this.saveSettings();
+        });
     }
     
     handleImageUpload(files) {
@@ -157,6 +168,11 @@ class EmojiBackgroundGenerator {
                 this.tiltInput.value = this.currentTilt;
                 this.tiltValue.textContent = `${this.currentTilt}°`;
             }
+            if (settings.imageSize) {
+                this.currentImageSize = settings.imageSize;
+                this.imageSizeInput.value = this.currentImageSize;
+                this.imageSizeValue.textContent = `${this.currentImageSize}%`;
+            }
         }
         this.updateLayoutButtons();
     }
@@ -168,7 +184,8 @@ class EmojiBackgroundGenerator {
             color: this.colorPicker.value,
             background: this.currentBackground,
             columns: this.currentColumns,
-            tilt: this.currentTilt
+            tilt: this.currentTilt,
+            imageSize: this.currentImageSize
         };
         localStorage.setItem('emojiGeneratorSettings', JSON.stringify(settings));
     }
@@ -274,8 +291,10 @@ class EmojiBackgroundGenerator {
     }
     
     drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
-        // 使用上传图片的实际大小
-        const emojiSize = Math.min(emojiCanvas.width, emojiCanvas.height, 50); // 限制最大大小为50px
+        // 计算基础表情大小
+        const baseEmojiSize = Math.min(emojiCanvas.width, emojiCanvas.height, 50); // 限制最大大小为50px
+        // 根据素材大小百分比调整
+        const emojiSize = baseEmojiSize * (this.currentImageSize / 100);
         const margin = 10; // 间距
         
         // 计算每行可容纳的表情数量
@@ -290,21 +309,31 @@ class EmojiBackgroundGenerator {
         
         // 绘制表情网格
         for (let row = 0; row < emojisPerCol; row++) {
+            const rowY = startY + row * (emojiSize + margin);
+            
+            // 应用倾斜度到整行
+            if (this.currentTilt !== 0) {
+                ctx.save();
+                // 计算行的中心点
+                const rowCenterX = startX + totalWidth / 2;
+                const rowCenterY = rowY + emojiSize / 2;
+                ctx.translate(rowCenterX, rowCenterY);
+                ctx.rotate(this.currentTilt * Math.PI / 180);
+                ctx.translate(-rowCenterX, -rowCenterY);
+            }
+            
+            // 绘制当前行的所有表情
             for (let col = 0; col < emojisPerRow; col++) {
                 const x = startX + col * (emojiSize + margin);
-                const y = startY + row * (emojiSize + margin);
+                const y = rowY;
                 
-                // 应用倾斜度
-                if (this.currentTilt !== 0) {
-                    ctx.save();
-                    ctx.translate(x + emojiSize / 2, y + emojiSize / 2);
-                    ctx.rotate(this.currentTilt * Math.PI / 180);
-                    ctx.drawImage(emojiCanvas, -emojiSize / 2, -emojiSize / 2, emojiSize, emojiSize);
-                    ctx.restore();
-                } else {
-                    // 绘制表情
-                    ctx.drawImage(emojiCanvas, x, y, emojiSize, emojiSize);
-                }
+                // 绘制表情
+                ctx.drawImage(emojiCanvas, x, y, emojiSize, emojiSize);
+            }
+            
+            // 恢复画布状态
+            if (this.currentTilt !== 0) {
+                ctx.restore();
             }
         }
     }
