@@ -21,12 +21,15 @@ class EmojiBackgroundGenerator {
         this.horizontalSpacingValue = document.getElementById('horizontal-spacing-value');
         this.verticalSpacingInput = document.getElementById('vertical-spacing-input');
         this.verticalSpacingValue = document.getElementById('vertical-spacing-value');
+        this.brightnessInput = document.getElementById('brightness-input');
+        this.brightnessValue = document.getElementById('brightness-value');
         this.presetColorsContainer = document.getElementById('preset-colors-container');
         this.currentColumns = 2; // 默认2列
         this.currentTilt = 0; // 默认倾斜度
         this.currentImageSize = 50; // 默认素材大小（百分比）
         this.currentHorizontalSpacing = 10; // 默认水平间距
         this.currentVerticalSpacing = 10; // 默认垂直间距
+        this.currentBrightness = 100; // 默认亮度（100%）
         this.currentBackground = '#f0f8ff'; // 默认背景色
         this.images = [];
         
@@ -201,6 +204,14 @@ class EmojiBackgroundGenerator {
             }
         });
         
+        // 亮度调整事件
+        this.brightnessInput.addEventListener('input', () => {
+            this.currentBrightness = parseInt(this.brightnessInput.value);
+            this.brightnessValue.textContent = `${this.currentBrightness}%`;
+            this.applyLayoutToAll();
+            this.saveSettings();
+        });
+        
         // 素材大小调整事件
         this.imageSizeInput.addEventListener('input', () => {
             this.currentImageSize = parseInt(this.imageSizeInput.value);
@@ -288,6 +299,11 @@ class EmojiBackgroundGenerator {
                 this.imageSizeInput.value = this.currentImageSize;
                 this.imageSizeValue.textContent = `${this.currentImageSize}%`;
             }
+            if (settings.brightness) {
+                this.currentBrightness = settings.brightness;
+                this.brightnessInput.value = this.currentBrightness;
+                this.brightnessValue.textContent = `${this.currentBrightness}%`;
+            }
         }
         this.updateLayoutButtons();
     }
@@ -300,7 +316,8 @@ class EmojiBackgroundGenerator {
             background: this.currentBackground,
             columns: this.currentColumns,
             tilt: this.currentTilt,
-            imageSize: this.currentImageSize
+            imageSize: this.currentImageSize,
+            brightness: this.currentBrightness
         };
         localStorage.setItem('emojiGeneratorSettings', JSON.stringify(settings));
     }
@@ -347,12 +364,22 @@ class EmojiBackgroundGenerator {
                 const g = parseInt(color.slice(3, 5), 16);
                 const b = parseInt(color.slice(5, 7), 16);
                 
+                // 计算亮度因子
+                const brightnessFactor = this.currentBrightness / 100;
+                
                 for (let i = 0; i < tempData.length; i += 4) {
                     const alpha = tempData[i + 3];
                     if (alpha > 0) {
+                        // 应用颜色
                         tempData[i] = r;     // 红色通道
                         tempData[i + 1] = g; // 绿色通道
                         tempData[i + 2] = b; // 蓝色通道
+                        
+                        // 应用亮度调整
+                        tempData[i] = Math.min(255, Math.max(0, tempData[i] * brightnessFactor));
+                        tempData[i + 1] = Math.min(255, Math.max(0, tempData[i + 1] * brightnessFactor));
+                        tempData[i + 2] = Math.min(255, Math.max(0, tempData[i + 2] * brightnessFactor));
+                        
                         // 保持原始透明度
                     }
                 }
@@ -514,12 +541,21 @@ class EmojiBackgroundGenerator {
         const g = parseInt(color.slice(3, 5), 16);
         const b = parseInt(color.slice(5, 7), 16);
         
+        // 计算亮度因子
+        const brightnessFactor = this.currentBrightness / 100;
+        
         for (let i = 0; i < tempData.length; i += 4) {
             const alpha = tempData[i + 3];
             if (alpha > 0) {
+                // 应用颜色
                 tempData[i] = r;
                 tempData[i + 1] = g;
                 tempData[i + 2] = b;
+                
+                // 应用亮度调整
+                tempData[i] = Math.min(255, Math.max(0, tempData[i] * brightnessFactor));
+                tempData[i + 1] = Math.min(255, Math.max(0, tempData[i + 1] * brightnessFactor));
+                tempData[i + 2] = Math.min(255, Math.max(0, tempData[i + 2] * brightnessFactor));
             }
         }
         tempCtx.putImageData(tempImageData, 0, 0);
@@ -575,12 +611,21 @@ class EmojiBackgroundGenerator {
         const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
         const tempData = tempImageData.data;
         
+        // 计算亮度因子
+        const brightnessFactor = this.currentBrightness / 100;
+        
         for (let i = 0; i < tempData.length; i += 4) {
             const alpha = tempData[i + 3];
             if (alpha > 0) {
                 tempData[i] = 255;     // 红色通道（白色）
                 tempData[i + 1] = 255; // 绿色通道（白色）
                 tempData[i + 2] = 255; // 蓝色通道（白色）
+                
+                // 应用亮度调整
+                tempData[i] = Math.min(255, Math.max(0, tempData[i] * brightnessFactor));
+                tempData[i + 1] = Math.min(255, Math.max(0, tempData[i + 1] * brightnessFactor));
+                tempData[i + 2] = Math.min(255, Math.max(0, tempData[i + 2] * brightnessFactor));
+                
                 // 保持原始透明度
             }
         }
