@@ -292,10 +292,10 @@ class EmojiBackgroundGenerator {
     
     drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
         // 计算基础表情大小
-        const baseEmojiSize = Math.min(emojiCanvas.width, emojiCanvas.height, 100); // 增加最大大小为100px
+        const baseEmojiSize = Math.min(emojiCanvas.width, emojiCanvas.height, 80); // 调整最大大小为80px
         // 根据素材大小百分比调整
         const emojiSize = baseEmojiSize * (this.currentImageSize / 100);
-        const margin = 10; // 间距
+        const margin = 20; // 增加间距到20px
         
         // 计算每行可容纳的表情数量（确保填满整个画布）
         const emojisPerRow = Math.ceil(width / (emojiSize + margin)) + 1; // 额外添加一行以确保填满
