@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIY表情符号背景生成器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>DIY表情符号背景生成器</h1>
+        <p>上传图片并自定义颜色，创建属于你的表情符号背景</p>
+        
+        <!-- 上传区域 -->
+        <div class="upload-section">
+            <label for="image-upload" class="upload-label">
+                点击或拖拽上传图片
+                <input type="file" id="image-upload" multiple accept="image/*">
+            </label>
+            <p class="upload-hint">支持上传多张图片</p>
+        </div>
+        
+        <!-- 颜色选择区域 -->
+        <div class="color-section">
+            <h3>选择颜色</h3>
+            <input type="color" id="color-picker" value="#ff6b6b">
+            <button id="apply-color">一键应用颜色</button>
+        </div>
+        
+        <!-- 预览区域 -->
+        <div class="preview-section">
+            <h3>预览效果</h3>
+            <div class="preview-container" id="preview-container">
+                <!-- 上传的图片将在这里显示 -->
+            </div>
+        </div>
+        
+        <!-- 下载区域 -->
+        <div class="download-section">
+            <button id="download-all">下载所有图片</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
