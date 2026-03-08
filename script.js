@@ -101,13 +101,23 @@ class EmojiBackgroundGenerator {
     }
     
     handleImageUpload(files) {
+        console.log('收到上传文件数量:', files.length);
         Array.from(files).forEach(file => {
+            console.log('处理文件:', file.name, '类型:', file.type, '大小:', file.size);
             if (file.type.startsWith('image/')) {
+                console.log('文件是图片，开始读取');
                 const reader = new FileReader();
                 reader.onload = (e) => {
+                    console.log('文件读取完成，开始处理');
                     this.processImage(e.target.result);
                 };
+                reader.onerror = (error) => {
+                    console.error('文件读取失败:', error);
+                    alert('文件读取失败，请尝试上传其他图片');
+                };
                 reader.readAsDataURL(file);
+            } else {
+                console.log('文件不是图片，跳过:', file.name);
             }
         });
     }
@@ -164,78 +174,95 @@ class EmojiBackgroundGenerator {
     }
     
     processImage(imageUrl) {
+        console.log('开始处理图片:', imageUrl.substring(0, 50) + '...');
         const img = new Image();
         img.crossOrigin = 'anonymous';
+        
         img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 使用保存的大小或默认值
-            const width = parseInt(this.widthInput.value) || 200;
-            const height = parseInt(this.heightInput.value) || 200;
-            canvas.width = width;
-            canvas.height = height;
-            
-            // 1. 填充背景色
-            ctx.fillStyle = this.currentBackground;
-            ctx.fillRect(0, 0, width, height);
-            
-            // 2. 先创建一个临时Canvas来处理原始图片
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = img.width;
-            tempCanvas.height = img.height;
-            tempCtx.drawImage(img, 0, 0);
-            
-            // 3. 应用颜色覆盖到原始图片（使用用户选择的颜色）
-            const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-            const tempData = tempImageData.data;
-            const color = this.colorPicker.value;
-            const r = parseInt(color.slice(1, 3), 16);
-            const g = parseInt(color.slice(3, 5), 16);
-            const b = parseInt(color.slice(5, 7), 16);
-            
-            for (let i = 0; i < tempData.length; i += 4) {
-                const alpha = tempData[i + 3];
-                if (alpha > 0) {
-                    tempData[i] = r;     // 红色通道
-                    tempData[i + 1] = g; // 绿色通道
-                    tempData[i + 2] = b; // 蓝色通道
-                    // 保持原始透明度
+            try {
+                console.log('图片加载成功，尺寸:', img.width, 'x', img.height);
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 使用保存的大小或默认值
+                const width = parseInt(this.widthInput.value) || 200;
+                const height = parseInt(this.heightInput.value) || 200;
+                canvas.width = width;
+                canvas.height = height;
+                console.log('创建Canvas，尺寸:', width, 'x', height);
+                
+                // 1. 填充背景色
+                ctx.fillStyle = this.currentBackground;
+                ctx.fillRect(0, 0, width, height);
+                
+                // 2. 先创建一个临时Canvas来处理原始图片
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = img.width;
+                tempCanvas.height = img.height;
+                tempCtx.drawImage(img, 0, 0);
+                
+                // 3. 应用颜色覆盖到原始图片（使用用户选择的颜色）
+                const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                const tempData = tempImageData.data;
+                const color = this.colorPicker.value;
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                
+                for (let i = 0; i < tempData.length; i += 4) {
+                    const alpha = tempData[i + 3];
+                    if (alpha > 0) {
+                        tempData[i] = r;     // 红色通道
+                        tempData[i + 1] = g; // 绿色通道
+                        tempData[i + 2] = b; // 蓝色通道
+                        // 保持原始透明度
+                    }
                 }
+                tempCtx.putImageData(tempImageData, 0, 0);
+                
+                // 4. 根据列数排列表情符号
+                this.drawEmojisInGrid(ctx, tempCanvas, width, height, this.currentColumns);
+                
+                // 创建预览项
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                
+                const previewImg = document.createElement('img');
+                previewImg.src = canvas.toDataURL();
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.textContent = '下载';
+                downloadBtn.addEventListener('click', () => {
+                    this.downloadImage(canvas, `emoji_${Date.now()}.png`);
+                });
+                
+                previewItem.appendChild(previewImg);
+                previewItem.appendChild(downloadBtn);
+                this.previewContainer.appendChild(previewItem);
+                console.log('预览项创建成功');
+                
+                // 存储图片信息
+                this.images.push({
+                    img,
+                    canvas,
+                    ctx,
+                    previewItem,
+                    previewImg
+                });
+                console.log('图片处理完成，当前图片数量:', this.images.length);
+            } catch (error) {
+                console.error('图片处理失败:', error);
+                alert('图片处理失败，请尝试上传其他图片');
             }
-            tempCtx.putImageData(tempImageData, 0, 0);
-            
-            // 4. 根据列数排列表情符号
-            this.drawEmojisInGrid(ctx, tempCanvas, width, height, this.currentColumns);
-            
-            // 创建预览项
-            const previewItem = document.createElement('div');
-            previewItem.className = 'preview-item';
-            
-            const previewImg = document.createElement('img');
-            previewImg.src = canvas.toDataURL();
-            
-            const downloadBtn = document.createElement('button');
-            downloadBtn.className = 'download-btn';
-            downloadBtn.textContent = '下载';
-            downloadBtn.addEventListener('click', () => {
-                this.downloadImage(canvas, `emoji_${Date.now()}.png`);
-            });
-            
-            previewItem.appendChild(previewImg);
-            previewItem.appendChild(downloadBtn);
-            this.previewContainer.appendChild(previewItem);
-            
-            // 存储图片信息
-            this.images.push({
-                img,
-                canvas,
-                ctx,
-                previewItem,
-                previewImg
-            });
         };
+        
+        img.onerror = (error) => {
+            console.error('图片加载失败:', error);
+            alert('图片加载失败，请尝试上传其他图片');
+        };
+        
         img.src = imageUrl;
     }
     
