@@ -116,35 +116,36 @@ class EmojiBackgroundGenerator {
             canvas.width = width;
             canvas.height = height;
             
-            // 1. 先创建一个临时Canvas来处理原始图片
+            // 1. 填充背景色
+            ctx.fillStyle = '#f0f8ff'; // 默认浅蓝色背景
+            ctx.fillRect(0, 0, width, height);
+            
+            // 2. 先创建一个临时Canvas来处理原始图片
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             tempCanvas.width = img.width;
             tempCanvas.height = img.height;
             tempCtx.drawImage(img, 0, 0);
             
-            // 2. 应用颜色覆盖到原始图片
+            // 3. 应用颜色覆盖到原始图片（设置为白色）
             const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const tempData = tempImageData.data;
-            const color = this.colorPicker.value;
-            const r = parseInt(color.slice(1, 3), 16);
-            const g = parseInt(color.slice(3, 5), 16);
-            const b = parseInt(color.slice(5, 7), 16);
             
             for (let i = 0; i < tempData.length; i += 4) {
                 const alpha = tempData[i + 3];
                 if (alpha > 0) {
-                    tempData[i] = r;
-                    tempData[i + 1] = g;
-                    tempData[i + 2] = b;
+                    tempData[i] = 255;     // 红色通道（白色）
+                    tempData[i + 1] = 255; // 绿色通道（白色）
+                    tempData[i + 2] = 255; // 蓝色通道（白色）
+                    // 保持原始透明度
                 }
             }
             tempCtx.putImageData(tempImageData, 0, 0);
             
-            // 3. 创建重复图案
+            // 4. 创建重复图案
             const pattern = ctx.createPattern(tempCanvas, 'repeat');
             
-            // 4. 填充整个Canvas
+            // 5. 填充整个Canvas
             ctx.fillStyle = pattern;
             ctx.fillRect(0, 0, width, height);
             
@@ -208,34 +209,36 @@ class EmojiBackgroundGenerator {
     applyColorToImage(imageInfo, color) {
         const { img, canvas, ctx, previewImg } = imageInfo;
         
-        // 1. 先创建一个临时Canvas来处理原始图片
+        // 1. 填充背景色（浅蓝色）
+        ctx.fillStyle = '#f0f8ff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 2. 先创建一个临时Canvas来处理原始图片
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
         tempCanvas.width = img.width;
         tempCanvas.height = img.height;
         tempCtx.drawImage(img, 0, 0);
         
-        // 2. 应用颜色覆盖到原始图片
+        // 3. 应用颜色覆盖到原始图片（设置为白色）
         const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
         const tempData = tempImageData.data;
-        const r = parseInt(color.slice(1, 3), 16);
-        const g = parseInt(color.slice(3, 5), 16);
-        const b = parseInt(color.slice(5, 7), 16);
         
         for (let i = 0; i < tempData.length; i += 4) {
             const alpha = tempData[i + 3];
             if (alpha > 0) {
-                tempData[i] = r;
-                tempData[i + 1] = g;
-                tempData[i + 2] = b;
+                tempData[i] = 255;     // 红色通道（白色）
+                tempData[i + 1] = 255; // 绿色通道（白色）
+                tempData[i + 2] = 255; // 蓝色通道（白色）
+                // 保持原始透明度
             }
         }
         tempCtx.putImageData(tempImageData, 0, 0);
         
-        // 3. 创建重复图案
+        // 4. 创建重复图案
         const pattern = ctx.createPattern(tempCanvas, 'repeat');
         
-        // 4. 填充整个Canvas
+        // 5. 填充整个Canvas
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
