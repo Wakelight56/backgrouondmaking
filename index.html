@@ -70,8 +70,8 @@
         <div class="image-size-section">
             <h3>素材大小设置</h3>
             <div class="image-size-controls">
-                <input type="range" id="image-size-input" min="10" max="100" value="50" step="5">
-                <span id="image-size-value">50%</span>
+                <input type="range" id="image-size-input" min="10" max="100" value="30" step="5">
+                <span id="image-size-value">30%</span>
             </div>
             <p class="image-size-hint">设置素材图片的大小</p>
         </div>
@@ -80,8 +80,8 @@
         <div class="spacing-section">
             <h3>间距设置</h3>
             <div class="spacing-controls">
-                <label>水平间距: <input type="range" id="horizontal-spacing-input" min="0" max="50" value="10" step="1"><span id="horizontal-spacing-value">10px</span></label>
-                <label>垂直间距: <input type="range" id="vertical-spacing-input" min="0" max="50" value="10" step="1"><span id="vertical-spacing-value">10px</span></label>
+                <label>水平间距: <input type="range" id="horizontal-spacing-input" min="0" max="50" value="20" step="1"><span id="horizontal-spacing-value">20px</span></label>
+                <label>垂直间距: <input type="range" id="vertical-spacing-input" min="0" max="50" value="20" step="1"><span id="vertical-spacing-value">20px</span></label>
             </div>
             <p class="spacing-hint">设置素材图片之间的间距</p>
         </div>
@@ -90,10 +90,30 @@
         <div class="brightness-section">
             <h3>亮度设置</h3>
             <div class="brightness-controls">
-                <input type="range" id="brightness-input" min="0" max="200" value="100" step="5">
-                <span id="brightness-value">100%</span>
+                <input type="range" id="brightness-input" min="0" max="200" value="80" step="5">
+                <span id="brightness-value">80%</span>
             </div>
             <p class="brightness-hint">调整整体亮度，100%为原始亮度</p>
+        </div>
+        
+        <!-- 对比度设置 -->
+        <div class="contrast-section">
+            <h3>对比度设置</h3>
+            <div class="contrast-controls">
+                <input type="range" id="contrast-input" min="0" max="200" value="100" step="5">
+                <span id="contrast-value">100%</span>
+            </div>
+            <p class="contrast-hint">调整全局对比度，100%为原始对比度</p>
+        </div>
+        
+        <!-- 混乱度设置 -->
+        <div class="chaos-section">
+            <h3>混乱度设置</h3>
+            <div class="chaos-controls">
+                <input type="range" id="chaos-input" min="0" max="100" value="0" step="5">
+                <span id="chaos-value">0%</span>
+            </div>
+            <p class="chaos-hint">调整素材的混乱程度，0%为整齐排列，100%为完全随机</p>
         </div>
         
         <!-- 图片大小设置 -->

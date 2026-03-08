@@ -491,6 +491,122 @@ p {
     color: #86868b;
 }
 
+.contrast-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.contrast-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1d1d1f;
+}
+
+.contrast-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+#contrast-input {
+    width: 200px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #d1d1d6;
+    border-radius: 3px;
+    outline: none;
+}
+
+#contrast-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #0071e3;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#contrast-input::-webkit-slider-thumb:hover {
+    background: #0077ed;
+}
+
+#contrast-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+    min-width: 60px;
+}
+
+.contrast-hint {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #86868b;
+}
+
+.chaos-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.chaos-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1d1d1f;
+}
+
+.chaos-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+#chaos-input {
+    width: 200px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #d1d1d6;
+    border-radius: 3px;
+    outline: none;
+}
+
+#chaos-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #0071e3;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#chaos-input::-webkit-slider-thumb:hover {
+    background: #0077ed;
+}
+
+#chaos-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+    min-width: 60px;
+}
+
+.chaos-hint {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #86868b;
+}
+
 .background-section {
     text-align: center;
     margin-bottom: 30px;
