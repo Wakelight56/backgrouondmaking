@@ -405,20 +405,38 @@ class EmojiBackgroundGenerator {
                 for (let i = 0; i < tempData.length; i += 4) {
                     const alpha = tempData[i + 3];
                     if (alpha > 0) {
+                        // 获取原始像素的亮度（用于保持亮度差异）
+                        const originalR = tempData[i];
+                        const originalG = tempData[i + 1];
+                        const originalB = tempData[i + 2];
+                        
+                        // 计算原始像素的亮度值（0-255）
+                        const originalBrightness = (originalR * 0.299 + originalG * 0.587 + originalB * 0.114);
+                        
                         // 应用颜色
                         let red = r;
                         let green = g;
                         let blue = b;
                         
-                        // 应用对比度调整
-                        red = Math.min(255, Math.max(0, ((red - 128) * contrastFactor) + 128));
-                        green = Math.min(255, Math.max(0, ((green - 128) * contrastFactor) + 128));
-                        blue = Math.min(255, Math.max(0, ((blue - 128) * contrastFactor) + 128));
+                        // 计算颜色的亮度
+                        const colorBrightness = (red * 0.299 + green * 0.587 + blue * 0.114);
+                        
+                        // 应用对比度调整 - 根据原始像素的亮度差异调整颜色
+                        const brightnessRatio = originalBrightness / 255; // 0-1
+                        
+                        // 应用对比度到亮度差异
+                        const contrastAdjustedRatio = ((brightnessRatio - 0.5) * contrastFactor) + 0.5;
+                        
+                        // 计算调整后的亮度
+                        const adjustedBrightness = colorBrightness * contrastAdjustedRatio;
+                        
+                        // 计算亮度调整因子
+                        const brightnessAdjustment = adjustedBrightness / colorBrightness;
                         
                         // 应用亮度调整
-                        red = Math.min(255, Math.max(0, red * brightnessFactor));
-                        green = Math.min(255, Math.max(0, green * brightnessFactor));
-                        blue = Math.min(255, Math.max(0, blue * brightnessFactor));
+                        red = Math.min(255, Math.max(0, red * brightnessAdjustment * brightnessFactor));
+                        green = Math.min(255, Math.max(0, green * brightnessAdjustment * brightnessFactor));
+                        blue = Math.min(255, Math.max(0, blue * brightnessAdjustment * brightnessFactor));
                         
                         // 更新像素值
                         tempData[i] = red;
@@ -604,20 +622,38 @@ class EmojiBackgroundGenerator {
         for (let i = 0; i < tempData.length; i += 4) {
             const alpha = tempData[i + 3];
             if (alpha > 0) {
+                // 获取原始像素的亮度（用于保持亮度差异）
+                const originalR = tempData[i];
+                const originalG = tempData[i + 1];
+                const originalB = tempData[i + 2];
+                
+                // 计算原始像素的亮度值（0-255）
+                const originalBrightness = (originalR * 0.299 + originalG * 0.587 + originalB * 0.114);
+                
                 // 应用颜色
                 let red = r;
                 let green = g;
                 let blue = b;
                 
-                // 应用对比度调整
-                red = Math.min(255, Math.max(0, ((red - 128) * contrastFactor) + 128));
-                green = Math.min(255, Math.max(0, ((green - 128) * contrastFactor) + 128));
-                blue = Math.min(255, Math.max(0, ((blue - 128) * contrastFactor) + 128));
+                // 计算颜色的亮度
+                const colorBrightness = (red * 0.299 + green * 0.587 + blue * 0.114);
+                
+                // 应用对比度调整 - 根据原始像素的亮度差异调整颜色
+                const brightnessRatio = originalBrightness / 255; // 0-1
+                
+                // 应用对比度到亮度差异
+                const contrastAdjustedRatio = ((brightnessRatio - 0.5) * contrastFactor) + 0.5;
+                
+                // 计算调整后的亮度
+                const adjustedBrightness = colorBrightness * contrastAdjustedRatio;
+                
+                // 计算亮度调整因子
+                const brightnessAdjustment = adjustedBrightness / colorBrightness;
                 
                 // 应用亮度调整
-                red = Math.min(255, Math.max(0, red * brightnessFactor));
-                green = Math.min(255, Math.max(0, green * brightnessFactor));
-                blue = Math.min(255, Math.max(0, blue * brightnessFactor));
+                red = Math.min(255, Math.max(0, red * brightnessAdjustment * brightnessFactor));
+                green = Math.min(255, Math.max(0, green * brightnessAdjustment * brightnessFactor));
+                blue = Math.min(255, Math.max(0, blue * brightnessAdjustment * brightnessFactor));
                 
                 // 更新像素值
                 tempData[i] = red;
@@ -685,19 +721,38 @@ class EmojiBackgroundGenerator {
         for (let i = 0; i < tempData.length; i += 4) {
             const alpha = tempData[i + 3];
             if (alpha > 0) {
-                let red = 255;     // 红色通道（白色）
-                let green = 255; // 绿色通道（白色）
-                let blue = 255; // 蓝色通道（白色）
+                // 获取原始像素的亮度（用于保持亮度差异）
+                const originalR = tempData[i];
+                const originalG = tempData[i + 1];
+                const originalB = tempData[i + 2];
                 
-                // 应用对比度调整
-                red = Math.min(255, Math.max(0, ((red - 128) * contrastFactor) + 128));
-                green = Math.min(255, Math.max(0, ((green - 128) * contrastFactor) + 128));
-                blue = Math.min(255, Math.max(0, ((blue - 128) * contrastFactor) + 128));
+                // 计算原始像素的亮度值（0-255）
+                const originalBrightness = (originalR * 0.299 + originalG * 0.587 + originalB * 0.114);
+                
+                // 应用颜色（白色）
+                let red = 255;
+                let green = 255;
+                let blue = 255;
+                
+                // 计算颜色的亮度
+                const colorBrightness = (red * 0.299 + green * 0.587 + blue * 0.114);
+                
+                // 应用对比度调整 - 根据原始像素的亮度差异调整颜色
+                const brightnessRatio = originalBrightness / 255; // 0-1
+                
+                // 应用对比度到亮度差异
+                const contrastAdjustedRatio = ((brightnessRatio - 0.5) * contrastFactor) + 0.5;
+                
+                // 计算调整后的亮度
+                const adjustedBrightness = colorBrightness * contrastAdjustedRatio;
+                
+                // 计算亮度调整因子
+                const brightnessAdjustment = adjustedBrightness / colorBrightness;
                 
                 // 应用亮度调整
-                red = Math.min(255, Math.max(0, red * brightnessFactor));
-                green = Math.min(255, Math.max(0, green * brightnessFactor));
-                blue = Math.min(255, Math.max(0, blue * brightnessFactor));
+                red = Math.min(255, Math.max(0, red * brightnessAdjustment * brightnessFactor));
+                green = Math.min(255, Math.max(0, green * brightnessAdjustment * brightnessFactor));
+                blue = Math.min(255, Math.max(0, blue * brightnessAdjustment * brightnessFactor));
                 
                 // 更新像素值
                 tempData[i] = red;
