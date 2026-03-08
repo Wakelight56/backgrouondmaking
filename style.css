@@ -70,6 +70,69 @@ p {
     margin-bottom: 30px;
 }
 
+.size-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.size-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1d1d1f;
+}
+
+.size-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.size-controls input {
+    width: 100px;
+    padding: 10px;
+    border: 2px solid #d1d1d6;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.size-controls input:focus {
+    outline: none;
+    border-color: #0071e3;
+}
+
+.size-controls span {
+    font-size: 18px;
+    font-weight: 600;
+    color: #86868b;
+}
+
+#apply-size {
+    padding: 10px 20px;
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#apply-size:hover {
+    background-color: #0077ed;
+}
+
+.size-hint {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #86868b;
+}
+
 .color-section h3 {
     font-size: 18px;
     font-weight: 600;
@@ -78,13 +141,14 @@ p {
 }
 
 #color-picker {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     margin-right: 15px;
     vertical-align: middle;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #apply-color {

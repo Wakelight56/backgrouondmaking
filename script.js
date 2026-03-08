@@ -5,8 +5,12 @@ class EmojiBackgroundGenerator {
         this.applyColorBtn = document.getElementById('apply-color');
         this.downloadAllBtn = document.getElementById('download-all');
         this.previewContainer = document.getElementById('preview-container');
+        this.widthInput = document.getElementById('width-input');
+        this.heightInput = document.getElementById('height-input');
+        this.applySizeBtn = document.getElementById('apply-size');
         this.images = [];
         this.initEventListeners();
+        this.loadSavedSettings();
     }
     
     initEventListeners() {
@@ -46,6 +50,20 @@ class EmojiBackgroundGenerator {
         this.downloadAllBtn.addEventListener('click', () => {
             this.downloadAllImages();
         });
+        
+        // 应用大小
+        this.applySizeBtn.addEventListener('click', () => {
+            this.applySizeToAll();
+        });
+        
+        // 保存设置
+        this.widthInput.addEventListener('change', () => {
+            this.saveSettings();
+        });
+        
+        this.heightInput.addEventListener('change', () => {
+            this.saveSettings();
+        });
     }
     
     handleImageUpload(files) {
@@ -60,6 +78,31 @@ class EmojiBackgroundGenerator {
         });
     }
     
+    loadSavedSettings() {
+        const savedSettings = localStorage.getItem('emojiGeneratorSettings');
+        if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            if (settings.width) {
+                this.widthInput.value = settings.width;
+            }
+            if (settings.height) {
+                this.heightInput.value = settings.height;
+            }
+            if (settings.color) {
+                this.colorPicker.value = settings.color;
+            }
+        }
+    }
+    
+    saveSettings() {
+        const settings = {
+            width: parseInt(this.widthInput.value) || 200,
+            height: parseInt(this.heightInput.value) || 200,
+            color: this.colorPicker.value
+        };
+        localStorage.setItem('emojiGeneratorSettings', JSON.stringify(settings));
+    }
+    
     processImage(imageUrl) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -67,12 +110,27 @@ class EmojiBackgroundGenerator {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // 设置Canvas大小为图片大小
-            canvas.width = img.width;
-            canvas.height = img.height;
+            // 使用保存的大小或默认值
+            const width = parseInt(this.widthInput.value) || 200;
+            const height = parseInt(this.heightInput.value) || 200;
+            canvas.width = width;
+            canvas.height = height;
             
-            // 绘制原始图片
-            ctx.drawImage(img, 0, 0);
+            // 绘制背景
+            ctx.fillStyle = this.colorPicker.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制图片（保持透明度，居中显示）
+            ctx.globalCompositeOperation = 'source-atop';
+            const scale = Math.min(width / img.width, height / img.height, 1);
+            const scaledWidth = img.width * scale;
+            const scaledHeight = img.height * scale;
+            const x = (width - scaledWidth) / 2;
+            const y = (height - scaledHeight) / 2;
+            ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+            
+            // 重置合成模式
+            ctx.globalCompositeOperation = 'source-over';
             
             // 创建预览项
             const previewItem = document.createElement('div');
@@ -104,6 +162,42 @@ class EmojiBackgroundGenerator {
         img.src = imageUrl;
     }
     
+    applySizeToAll() {
+        this.images.forEach(imageInfo => {
+            this.updateImageSize(imageInfo);
+        });
+        this.saveSettings();
+    }
+    
+    updateImageSize(imageInfo) {
+        const { img, canvas, ctx, previewImg } = imageInfo;
+        const width = parseInt(this.widthInput.value) || 200;
+        const height = parseInt(this.heightInput.value) || 200;
+        
+        // 更新Canvas大小
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 绘制背景
+        ctx.fillStyle = this.colorPicker.value;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 绘制图片（保持透明度，居中显示）
+        ctx.globalCompositeOperation = 'source-atop';
+        const scale = Math.min(width / img.width, height / img.height, 1);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (width - scaledWidth) / 2;
+        const y = (height - scaledHeight) / 2;
+        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+        
+        // 重置合成模式
+        ctx.globalCompositeOperation = 'source-over';
+        
+        // 更新预览
+        previewImg.src = canvas.toDataURL();
+    }
+    
     applyColorToAll() {
         const color = this.colorPicker.value;
         this.images.forEach(imageInfo => {
@@ -121,15 +215,23 @@ class EmojiBackgroundGenerator {
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // 绘制图片（保持透明度）
+        // 绘制图片（保持透明度，居中显示）
         ctx.globalCompositeOperation = 'source-atop';
-        ctx.drawImage(img, 0, 0);
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height, 1);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (canvas.width - scaledWidth) / 2;
+        const y = (canvas.height - scaledHeight) / 2;
+        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
         
         // 重置合成模式
         ctx.globalCompositeOperation = 'source-over';
         
         // 更新预览
         previewImg.src = canvas.toDataURL();
+        
+        // 保存颜色设置
+        this.saveSettings();
     }
     
     downloadImage(canvas, filename) {
