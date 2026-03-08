@@ -292,14 +292,29 @@ class EmojiBackgroundGenerator {
     
     drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
         // 计算基础表情大小
-        const baseEmojiSize = Math.min(emojiCanvas.width, emojiCanvas.height, 80); // 调整最大大小为80px
+        const baseSize = 80; // 基础大小
         // 根据素材大小百分比调整
-        const emojiSize = baseEmojiSize * (this.currentImageSize / 100);
-        const margin = 20; // 增加间距到20px
+        const scaleFactor = this.currentImageSize / 100;
+        
+        // 保持图片原始宽高比例
+        const aspectRatio = emojiCanvas.width / emojiCanvas.height;
+        let emojiWidth, emojiHeight;
+        
+        if (aspectRatio > 1) {
+            // 宽图
+            emojiWidth = baseSize * scaleFactor;
+            emojiHeight = emojiWidth / aspectRatio;
+        } else {
+            // 高图或正方形
+            emojiHeight = baseSize * scaleFactor;
+            emojiWidth = emojiHeight * aspectRatio;
+        }
+        
+        const margin = 20; // 间距
         
         // 计算每行可容纳的表情数量（确保填满整个画布）
-        const emojisPerRow = Math.ceil(width / (emojiSize + margin)) + 1; // 额外添加一行以确保填满
-        const emojisPerCol = Math.ceil(height / (emojiSize + margin)) + 1; // 额外添加一列以确保填满
+        const emojisPerRow = Math.ceil(width / (emojiWidth + margin)) + 1; // 额外添加一行以确保填满
+        const emojisPerCol = Math.ceil(height / (emojiHeight + margin)) + 1; // 额外添加一列以确保填满
         
         // 计算起始位置，从左上角开始，确保图案填满整个画布
         const startX = 0;
@@ -307,14 +322,14 @@ class EmojiBackgroundGenerator {
         
         // 绘制表情网格
         for (let row = 0; row < emojisPerCol; row++) {
-            const rowY = startY + row * (emojiSize + margin);
+            const rowY = startY + row * (emojiHeight + margin);
             
             // 应用倾斜度到整行
             if (this.currentTilt !== 0) {
                 ctx.save();
                 // 计算行的中心点
                 const rowCenterX = width / 2;
-                const rowCenterY = rowY + emojiSize / 2;
+                const rowCenterY = rowY + emojiHeight / 2;
                 ctx.translate(rowCenterX, rowCenterY);
                 ctx.rotate(this.currentTilt * Math.PI / 180);
                 ctx.translate(-rowCenterX, -rowCenterY);
@@ -322,13 +337,13 @@ class EmojiBackgroundGenerator {
             
             // 绘制当前行的所有表情
             for (let col = 0; col < emojisPerRow; col++) {
-                const x = startX + col * (emojiSize + margin);
+                const x = startX + col * (emojiWidth + margin);
                 const y = rowY;
                 
                 // 绘制表情，使用更好的缩放方式
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(emojiCanvas, x, y, emojiSize, emojiSize);
+                ctx.drawImage(emojiCanvas, x, y, emojiWidth, emojiHeight);
             }
             
             // 恢复画布状态
