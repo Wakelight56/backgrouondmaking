@@ -300,24 +300,9 @@ class EmojiBackgroundGenerator {
     }
     
     drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
-        // 计算基础表情大小
-        const baseSize = 80; // 基础大小
-        // 根据素材大小百分比调整
-        const scaleFactor = this.currentImageSize / 100;
-        
-        // 保持图片原始宽高比例
-        const aspectRatio = emojiCanvas.width / emojiCanvas.height;
-        let emojiWidth, emojiHeight;
-        
-        if (aspectRatio > 1) {
-            // 宽图
-            emojiWidth = baseSize * scaleFactor;
-            emojiHeight = emojiWidth / aspectRatio;
-        } else {
-            // 高图或正方形
-            emojiHeight = baseSize * scaleFactor;
-            emojiWidth = emojiHeight * aspectRatio;
-        }
+        // 使用素材图片的原始尺寸
+        const emojiWidth = emojiCanvas.width;
+        const emojiHeight = emojiCanvas.height;
         
         const margin = 20; // 间距
         
@@ -349,7 +334,7 @@ class EmojiBackgroundGenerator {
                 const x = startX + col * (emojiWidth + margin);
                 const y = rowY;
                 
-                // 绘制表情，使用更好的缩放方式
+                // 绘制表情，使用原始尺寸
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(emojiCanvas, x, y, emojiWidth, emojiHeight);
