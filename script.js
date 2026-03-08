@@ -247,7 +247,8 @@ class EmojiBackgroundGenerator {
     }
     
     drawEmojisInGrid(ctx, emojiCanvas, width, height, columns) {
-        const emojiSize = 30; // 表情大小
+        // 使用上传图片的实际大小
+        const emojiSize = Math.min(emojiCanvas.width, emojiCanvas.height, 50); // 限制最大大小为50px
         const margin = 10; // 间距
         
         // 计算每行可容纳的表情数量
