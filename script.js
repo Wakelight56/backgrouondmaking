@@ -15,9 +15,15 @@ class EmojiBackgroundGenerator {
         this.tiltValue = document.getElementById('tilt-value');
         this.imageSizeInput = document.getElementById('image-size-input');
         this.imageSizeValue = document.getElementById('image-size-value');
+        this.horizontalSpacingInput = document.getElementById('horizontal-spacing-input');
+        this.horizontalSpacingValue = document.getElementById('horizontal-spacing-value');
+        this.verticalSpacingInput = document.getElementById('vertical-spacing-input');
+        this.verticalSpacingValue = document.getElementById('vertical-spacing-value');
         this.currentColumns = 2; // 默认2列
         this.currentTilt = 0; // 默认倾斜度
         this.currentImageSize = 50; // 默认素材大小（百分比）
+        this.currentHorizontalSpacing = 10; // 默认水平间距
+        this.currentVerticalSpacing = 10; // 默认垂直间距
         this.currentBackground = '#f0f8ff'; // 默认背景色
         this.images = [];
         this.initEventListeners();
@@ -106,6 +112,22 @@ class EmojiBackgroundGenerator {
         this.imageSizeInput.addEventListener('input', () => {
             this.currentImageSize = parseInt(this.imageSizeInput.value);
             this.imageSizeValue.textContent = `${this.currentImageSize}%`;
+            this.applyLayoutToAll();
+            this.saveSettings();
+        });
+        
+        // 水平间距调整事件
+        this.horizontalSpacingInput.addEventListener('input', () => {
+            this.currentHorizontalSpacing = parseInt(this.horizontalSpacingInput.value);
+            this.horizontalSpacingValue.textContent = `${this.currentHorizontalSpacing}px`;
+            this.applyLayoutToAll();
+            this.saveSettings();
+        });
+        
+        // 垂直间距调整事件
+        this.verticalSpacingInput.addEventListener('input', () => {
+            this.currentVerticalSpacing = parseInt(this.verticalSpacingInput.value);
+            this.verticalSpacingValue.textContent = `${this.currentVerticalSpacing}px`;
             this.applyLayoutToAll();
             this.saveSettings();
         });
@@ -304,11 +326,22 @@ class EmojiBackgroundGenerator {
         const emojiWidth = emojiCanvas.width;
         const emojiHeight = emojiCanvas.height;
         
-        const margin = 10; // 适当的间距
+        // 使用用户设置的间距
+        const horizontalSpacing = this.currentHorizontalSpacing;
+        const verticalSpacing = this.currentVerticalSpacing;
         
         // 计算需要多少行和列才能填满整个画布
-        const emojisPerRow = Math.ceil(width / (emojiWidth + margin)) + 1;
-        const emojisPerCol = Math.ceil(height / (emojiHeight + margin)) + 1;
+        // 首先计算基于用户选择的列数，确保覆盖整个宽度
+        let emojisPerRow = columns;
+        // 计算实际每行的宽度，确保覆盖整个画布
+        const rowWidth = emojisPerRow * (emojiWidth + horizontalSpacing) - horizontalSpacing;
+        // 如果当前列数不够覆盖宽度，增加列数
+        if (rowWidth < width) {
+            emojisPerRow = Math.ceil(width / (emojiWidth + horizontalSpacing)) + 1;
+        }
+        
+        // 计算需要多少行才能覆盖整个高度
+        const emojisPerCol = Math.ceil(height / (emojiHeight + verticalSpacing)) + 1;
         
         // 从左上角开始绘制
         const startX = 0;
@@ -320,7 +353,7 @@ class EmojiBackgroundGenerator {
         
         // 绘制表情网格
         for (let row = 0; row < emojisPerCol; row++) {
-            const rowY = startY + row * (emojiHeight + margin);
+            const rowY = startY + row * (emojiHeight + verticalSpacing);
             
             // 应用倾斜度到整行
             if (this.currentTilt !== 0) {
@@ -334,7 +367,7 @@ class EmojiBackgroundGenerator {
             
             // 绘制当前行的所有表情
             for (let col = 0; col < emojisPerRow; col++) {
-                const x = startX + col * (emojiWidth + margin);
+                const x = startX + col * (emojiWidth + horizontalSpacing);
                 const y = rowY;
                 
                 // 直接绘制原始尺寸的图片，不进行任何缩放
@@ -429,8 +462,8 @@ class EmojiBackgroundGenerator {
     applyColorToImage(imageInfo, color) {
         const { img, canvas, ctx, previewImg } = imageInfo;
         
-        // 1. 填充背景色（浅蓝色）
-        ctx.fillStyle = '#f0f8ff';
+        // 1. 填充背景色（使用用户设置的背景色）
+        ctx.fillStyle = this.currentBackground;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // 2. 先创建一个临时Canvas来处理原始图片

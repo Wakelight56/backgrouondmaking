@@ -297,6 +297,75 @@ p {
     color: #86868b;
 }
 
+.spacing-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.spacing-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1d1d1f;
+}
+
+.spacing-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.spacing-controls label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.spacing-controls input[type="range"] {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #d1d1d6;
+    border-radius: 3px;
+    outline: none;
+}
+
+.spacing-controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #0071e3;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.spacing-controls input[type="range"]::-webkit-slider-thumb:hover {
+    background: #0077ed;
+}
+
+.spacing-controls span {
+    min-width: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.spacing-hint {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #86868b;
+}
+
 .background-section {
     text-align: center;
     margin-bottom: 30px;
