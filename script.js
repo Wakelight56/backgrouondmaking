@@ -21,6 +21,7 @@ class EmojiBackgroundGenerator {
         this.horizontalSpacingValue = document.getElementById('horizontal-spacing-value');
         this.verticalSpacingInput = document.getElementById('vertical-spacing-input');
         this.verticalSpacingValue = document.getElementById('vertical-spacing-value');
+        this.presetColorsContainer = document.getElementById('preset-colors-container');
         this.currentColumns = 2; // 默认2列
         this.currentTilt = 0; // 默认倾斜度
         this.currentImageSize = 50; // 默认素材大小（百分比）
@@ -28,8 +29,70 @@ class EmojiBackgroundGenerator {
         this.currentVerticalSpacing = 10; // 默认垂直间距
         this.currentBackground = '#f0f8ff'; // 默认背景色
         this.images = [];
+        
+        // 预设颜色数据
+        this.presetColors = [
+            {
+                name: 'Leo/need💫',
+                colors: [
+                    { name: 'ick', color: '#33AAEE' },
+                    { name: 'saki', color: '#FFDD44' },
+                    { name: 'hnm', color: '#EE6666' },
+                    { name: 'shiho', color: '#BBDD22' }
+                ]
+            },
+            {
+                name: 'MORE MORE JUMP！☘️',
+                colors: [
+                    { name: 'mnr', color: '#FFCCAA' },
+                    { name: 'hrk', color: '#99CCFF' },
+                    { name: 'airi', color: '#FFAACC' },
+                    { name: 'szk', color: '#99EEDD' }
+                ]
+            },
+            {
+                name: 'Vivid BAD SQUAD🎤',
+                colors: [
+                    { name: 'khn', color: '#FF6699' },
+                    { name: 'an', color: '#00BBDD' },
+                    { name: 'akt', color: '#FF7722' },
+                    { name: 'toya', color: '#0077DD' }
+                ]
+            },
+            {
+                name: 'Wonderlands×Showtime🎪',
+                colors: [
+                    { name: 'tks', color: '#FFBB00' },
+                    { name: 'emu', color: '#FF66BB' },
+                    { name: 'nene', color: '#33DD99' },
+                    { name: 'rui', color: '#BB88EE' }
+                ]
+            },
+            {
+                name: 'Nightcord at 25:00🎧',
+                colors: [
+                    { name: 'knd', color: '#BB6688' },
+                    { name: 'mfy', color: '#8888CC' },
+                    { name: 'ena', color: '#CCAA88' },
+                    { name: 'mzk', color: '#DDAACC' }
+                ]
+            },
+            {
+                name: 'VIRTUAL SINGER✨️',
+                colors: [
+                    { name: 'miku', color: '#33CCBB' },
+                    { name: 'rin', color: '#FFCC11' },
+                    { name: 'len', color: '#FFEE11' },
+                    { name: 'luka', color: '#FFBBCC' },
+                    { name: 'meiko', color: '#DD4444' },
+                    { name: 'kaito', color: '#3366CC' }
+                ]
+            }
+        ];
+        
         this.initEventListeners();
         this.loadSavedSettings();
+        this.generatePresetColors();
     }
     
     initEventListeners() {
@@ -545,6 +608,45 @@ class EmojiBackgroundGenerator {
     downloadAllImages() {
         this.images.forEach((imageInfo, index) => {
             this.downloadImage(imageInfo.canvas, `emoji_${index + 1}.png`);
+        });
+    }
+    
+    generatePresetColors() {
+        this.presetColorsContainer.innerHTML = '';
+        
+        this.presetColors.forEach(group => {
+            const groupElement = document.createElement('div');
+            groupElement.className = 'preset-color-group';
+            
+            const groupTitle = document.createElement('h4');
+            groupTitle.textContent = group.name;
+            groupElement.appendChild(groupTitle);
+            
+            group.colors.forEach(item => {
+                const colorItem = document.createElement('div');
+                colorItem.className = 'preset-color-item';
+                
+                const colorSwatch = document.createElement('div');
+                colorSwatch.className = 'preset-color-swatch';
+                colorSwatch.style.backgroundColor = item.color;
+                
+                const colorName = document.createElement('span');
+                colorName.className = 'preset-color-name';
+                colorName.textContent = item.name;
+                
+                colorItem.appendChild(colorSwatch);
+                colorItem.appendChild(colorName);
+                
+                // 添加点击事件
+                colorItem.addEventListener('click', () => {
+                    this.colorPicker.value = item.color;
+                    this.hexColorInput.value = item.color;
+                });
+                
+                groupElement.appendChild(colorItem);
+            });
+            
+            this.presetColorsContainer.appendChild(groupElement);
         });
     }
 }
