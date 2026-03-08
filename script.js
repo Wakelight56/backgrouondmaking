@@ -116,11 +116,37 @@ class EmojiBackgroundGenerator {
             canvas.width = width;
             canvas.height = height;
             
-            // 整张排布图片（拉伸填充）
-            ctx.drawImage(img, 0, 0, width, height);
+            // 1. 先创建一个临时Canvas来处理原始图片
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+            tempCtx.drawImage(img, 0, 0);
             
-            // 应用颜色覆盖
-            this.applyColorToImage({ img, canvas, ctx, previewImg: null });
+            // 2. 应用颜色覆盖到原始图片
+            const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const tempData = tempImageData.data;
+            const color = this.colorPicker.value;
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            
+            for (let i = 0; i < tempData.length; i += 4) {
+                const alpha = tempData[i + 3];
+                if (alpha > 0) {
+                    tempData[i] = r;
+                    tempData[i + 1] = g;
+                    tempData[i + 2] = b;
+                }
+            }
+            tempCtx.putImageData(tempImageData, 0, 0);
+            
+            // 3. 创建重复图案
+            const pattern = ctx.createPattern(tempCanvas, 'repeat');
+            
+            // 4. 填充整个Canvas
+            ctx.fillStyle = pattern;
+            ctx.fillRect(0, 0, width, height);
             
             // 创建预览项
             const previewItem = document.createElement('div');
@@ -168,10 +194,7 @@ class EmojiBackgroundGenerator {
         canvas.width = width;
         canvas.height = height;
         
-        // 整张排布图片（拉伸填充）
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // 重新应用颜色覆盖
+        // 重新应用颜色覆盖（会自动创建重复图案）
         this.applyColorToImage({ img, canvas, ctx, previewImg });
     }
     
@@ -183,30 +206,38 @@ class EmojiBackgroundGenerator {
     }
     
     applyColorToImage(imageInfo, color) {
-        const { canvas, ctx, previewImg } = imageInfo;
+        const { img, canvas, ctx, previewImg } = imageInfo;
         
-        // 获取颜色RGB值
+        // 1. 先创建一个临时Canvas来处理原始图片
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
+        tempCtx.drawImage(img, 0, 0);
+        
+        // 2. 应用颜色覆盖到原始图片
+        const tempImageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const tempData = tempImageData.data;
         const r = parseInt(color.slice(1, 3), 16);
         const g = parseInt(color.slice(3, 5), 16);
         const b = parseInt(color.slice(5, 7), 16);
         
-        // 获取图像数据
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        // 遍历所有像素，替换颜色（保留透明度）
-        for (let i = 0; i < data.length; i += 4) {
-            const alpha = data[i + 3];
-            if (alpha > 0) { // 只处理非透明像素
-                data[i] = r;     // 红色通道
-                data[i + 1] = g; // 绿色通道
-                data[i + 2] = b; // 蓝色通道
-                // 保持原始透明度
+        for (let i = 0; i < tempData.length; i += 4) {
+            const alpha = tempData[i + 3];
+            if (alpha > 0) {
+                tempData[i] = r;
+                tempData[i + 1] = g;
+                tempData[i + 2] = b;
             }
         }
+        tempCtx.putImageData(tempImageData, 0, 0);
         
-        // 把修改后的数据放回Canvas
-        ctx.putImageData(imageData, 0, 0);
+        // 3. 创建重复图案
+        const pattern = ctx.createPattern(tempCanvas, 'repeat');
+        
+        // 4. 填充整个Canvas
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         // 更新预览
         if (previewImg) {
